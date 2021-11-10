@@ -6,6 +6,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.*
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -22,6 +26,11 @@ class MainActivity : AppCompatActivity() {
 
         date1= findViewById(R.id.textView2)
         date2= findViewById(R.id.textView4)
+
+        //!!!!!faudrait mettre les date anterieures de base
+        date1!!.text=Utils.dateToString(Calendar.getInstance().time)
+        date2!!.text=Utils.dateToString(Calendar.getInstance().time)
+
         search=findViewById(R.id.search)
 
 
@@ -96,9 +105,38 @@ class MainActivity : AppCompatActivity() {
         search!!.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View) {
 
+                
 
-                val url = "https://www.google.com"
-                Log.v("tag",spinner.getSelectedItem().toString().split(" ")[1])
+// Instantiate the RequestQueue.
+                val queue = Volley.newRequestQueue(this@MainActivity)
+                var url="https://opensky-network.org/api/flights/departure?"
+                val textView = findViewById<TextView>(R.id.textView)
+                val airportIcao=Utils.generateAirportList()[spinner.selectedItemPosition].icao
+
+                val myFormat = "MM/dd/yyyy" // mention the format you need
+                val sdf = SimpleDateFormat(myFormat, Locale.US)
+                val time1 = sdf.parse(date1!!.text.toString()).time/1000
+                val time2=sdf.parse(date2!!.text.toString()).time/1000
+                url+="airport=${airportIcao}&begin=${time1}&end=${time2}"
+
+
+
+
+// Request a string response from the provided URL.
+                val stringRequest = StringRequest(
+                    Request.Method.GET, url,
+                    Response.Listener<String> { response ->
+                        // Display the first 500 characters of the response string.
+                        textView.text = "Response is: ${response.substring(0, 500)}"
+                    },
+                    Response.ErrorListener {
+
+                        textView.text = it.message
+                        Log.i("Request", "${it.message} and ${it.cause}")})
+
+// Add the request to the RequestQueue.
+                queue.add(stringRequest)
+
 
             }
         })

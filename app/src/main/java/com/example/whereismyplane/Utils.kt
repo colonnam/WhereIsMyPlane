@@ -125,7 +125,7 @@ class Utils private constructor() {
         }
 
         fun getDateHourFormat(): SimpleDateFormat {
-            val format = "dd/MM/yy HH:mm"
+            val format = "dd/MM/yyyy HH:mm"
             return SimpleDateFormat(format, Locale.US)
         }
 
@@ -135,7 +135,7 @@ class Utils private constructor() {
         }
 
         fun getStandardDateFormat(): SimpleDateFormat {
-            val format = "dd/MM/yy"
+            val format = "dd/MM/yyyy"
             return SimpleDateFormat(format, Locale.US)
         }
 
