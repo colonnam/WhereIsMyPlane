@@ -12,11 +12,20 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import java.text.SimpleDateFormat
 import java.util.*
+import org.json.JSONObject
+import android.content.Intent
+
+
+
+
+
+
 
 class MainActivity : AppCompatActivity() {
     var date1:TextView?=null
     var date2:TextView?=null
     var search:Button?=null
+    var switch:Switch?=null;
 
     var cal = Calendar.getInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,11 +36,18 @@ class MainActivity : AppCompatActivity() {
         date1= findViewById(R.id.textView2)
         date2= findViewById(R.id.textView4)
 
+        var d1=Calendar.getInstance()
+        d1.add(Calendar.DAY_OF_MONTH, -2)
+        var d2=Calendar.getInstance()
+        d2.add(Calendar.DAY_OF_MONTH, -1)
         //!!!!!faudrait mettre les date anterieures de base
-        date1!!.text=Utils.dateToString(Calendar.getInstance().time)
-        date2!!.text=Utils.dateToString(Calendar.getInstance().time)
+        date1!!.text=Utils.dateToString(d1.time)
+        date2!!.text=Utils.dateToString(d2.time)
 
         search=findViewById(R.id.search)
+
+        switch = findViewById(R.id.switch1)
+
 
 
 
@@ -105,15 +121,22 @@ class MainActivity : AppCompatActivity() {
         search!!.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View) {
 
-                
+
 
 // Instantiate the RequestQueue.
                 val queue = Volley.newRequestQueue(this@MainActivity)
-                var url="https://opensky-network.org/api/flights/departure?"
+
+                var url="https://opensky-network.org/api/flights/"
+                if(switch!!.isChecked()) {
+                    url += "arrival?"
+                }
+                else {
+                    url += "departure?"
+                }
                 val textView = findViewById<TextView>(R.id.textView)
                 val airportIcao=Utils.generateAirportList()[spinner.selectedItemPosition].icao
 
-                val myFormat = "MM/dd/yyyy" // mention the format you need
+                val myFormat = "dd/MM/yyyy" // mention the format you need
                 val sdf = SimpleDateFormat(myFormat, Locale.US)
                 val time1 = sdf.parse(date1!!.text.toString()).time/1000
                 val time2=sdf.parse(date2!!.text.toString()).time/1000
@@ -127,7 +150,9 @@ class MainActivity : AppCompatActivity() {
                     Request.Method.GET, url,
                     Response.Listener<String> { response ->
                         // Display the first 500 characters of the response string.
-                        textView.text = "Response is: ${response.substring(0, 500)}"
+
+                        val jsonObject = JSONObject(response)
+                        textView.text = "Response is: ${response.length}"
                     },
                     Response.ErrorListener {
 
@@ -136,20 +161,29 @@ class MainActivity : AppCompatActivity() {
 
 // Add the request to the RequestQueue.
                 queue.add(stringRequest)
+                Log.i("s",stringRequest.toString())
 
+
+
+                //openList()
 
             }
         })
 
 
     }
+    fun openList(my_array : Array<FlightModel>) {
+        val intent = Intent(this, ListActivity::class.java)
+            intent.putExtra("my_array_next", my_array);
+        startActivity(intent)
+    }
     private fun updateDate1InView() {
-        val myFormat = "MM/dd/yyyy" // mention the format you need
+        val myFormat = "dd/MM/yyyy" // mention the format you need
         val sdf = SimpleDateFormat(myFormat, Locale.US)
         date1!!.text = sdf.format(cal.getTime())
     }
     private fun updateDate2InView() {
-        val myFormat = "MM/dd/yyyy" // mention the format you need
+        val myFormat = "dd/MM/yyyy" // mention the format you need
         val sdf = SimpleDateFormat(myFormat, Locale.US)
         date2!!.text = sdf.format(cal.getTime())
     }
