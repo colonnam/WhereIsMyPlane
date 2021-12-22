@@ -1,1 +1,3 @@
+dans le cadre de ce travail en développement d'application android, les difficultées rencontrées ont été grandes, d'une part du manque d'habitude envers l'environement android, et de l'autre à cause de mon incompréhension de l'espace de travail andoid studio, et ce nottament pendant les phases d'émulations qui parfois me privaient d'internet sur le device émulé.
 
+les perspectives d'évolutions de cette application sont donc de transmettre les données fournit par l'api appellée par le premier écran au second écran et afficher la liste puis transmettre ces informations à la carte 
